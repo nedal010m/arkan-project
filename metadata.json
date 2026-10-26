@@ -1,0 +1,6 @@
+{
+  "name": "أركان للدعاية والإعلان والواجهات المعمارية",
+  "description": "معرض أعمال احترافي تفاعلي للمطبوعات الورقية، المطبوعات الخارجية، واجهات الكلادينج، والحروف البارزة المضيئة مع نظام إدارة سحابي متكامل.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

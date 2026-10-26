@@ -1,0 +1,274 @@
+{
+  "entities": {
+    "ProjectItem": {
+      "title": "ProjectItem",
+      "description": "A portfolio project item showcasing paper prints, outdoor prints, cladding facades, or 3D prominent letters.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Project title in Arabic",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "category": {
+          "type": "string",
+          "description": "Primary service category",
+          "enum": ["paper_prints", "outdoor_prints", "cladding", "prominent_letters"]
+        },
+        "subCategory": {
+          "type": "string",
+          "description": "Specific print or signage sub-type",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed execution and material description",
+          "minLength": 2,
+          "maxLength": 1000
+        },
+        "clientName": {
+          "type": "string",
+          "description": "Client or brand name for the project",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "dimensions": {
+          "type": "string",
+          "description": "Dimensions or print size specification",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "materials": {
+          "type": "string",
+          "description": "Raw materials used in production",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "finishing": {
+          "type": "string",
+          "description": "Finishing, lamination, lighting, or mounting details",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "executionTime": {
+          "type": "string",
+          "description": "Production and installation turnaround duration",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "Primary custom image URL or compressed data URI",
+          "minLength": 0,
+          "maxLength": 900000
+        },
+        "visualPreset": {
+          "type": "string",
+          "description": "Architectural and print illustration preset identifier",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Whether the project is highlighted as a flagship work"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the project is visible in the public client showcase"
+        },
+        "displayOrder": {
+          "type": "number",
+          "description": "Sorting order index"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Owner identifier",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "adminPasscode": {
+          "type": "string",
+          "description": "Passcode verification token for owner mutations",
+          "minLength": 6,
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "title",
+        "category",
+        "subCategory",
+        "description",
+        "clientName",
+        "dimensions",
+        "materials",
+        "finishing",
+        "executionTime",
+        "imageUrl",
+        "visualPreset",
+        "featured",
+        "isPublic",
+        "displayOrder",
+        "ownerId",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AgencySettings": {
+      "title": "AgencySettings",
+      "description": "Public studio branding, hero copy, and social communication links.",
+      "type": "object",
+      "properties": {
+        "studioName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "tagline": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "heroHeadline": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 180
+        },
+        "heroSubheadline": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 400
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "contactNumber": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 40
+        },
+        "facebookUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 250
+        },
+        "instagramUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 250
+        },
+        "telegramUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 250
+        },
+        "locationText": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "workingHours": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "yearsExperience": {
+          "type": "number"
+        },
+        "completedProjectsCount": {
+          "type": "number"
+        },
+        "satisfiedClientsCount": {
+          "type": "number"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "adminPasscode": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 20
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "studioName",
+        "tagline",
+        "heroHeadline",
+        "heroSubheadline",
+        "whatsappNumber",
+        "contactNumber",
+        "facebookUrl",
+        "instagramUrl",
+        "telegramUrl",
+        "locationText",
+        "workingHours",
+        "yearsExperience",
+        "completedProjectsCount",
+        "satisfiedClientsCount",
+        "isPublic",
+        "ownerId",
+        "updatedAt"
+      ]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Trusted administrator record keyed by user UID.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["owner"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "role", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/ProjectItem" },
+      "description": "Portfolio works across paper prints, outdoor prints, cladding, and prominent 3D letters."
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/AgencySettings" },
+      "description": "Public agency branding and social contact links (document ID: agency_profile)."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Administrator registry for access control."
+    }
+  }
+}

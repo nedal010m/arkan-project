@@ -1,0 +1,186 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 0: Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Hardened Global Helpers
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email_verified == true &&
+        (request.auth.token.email == 'nedal010m@gmail.com' ||
+         exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function hasValidOwnerPasscode() {
+      return ('adminPasscode' in incoming()) &&
+        incoming().adminPasscode is string &&
+        incoming().adminPasscode == '109283';
+    }
+
+    // Validation Blueprint: ProjectItem
+    function isValidProjectItem(data) {
+      return data.keys().hasAll([
+          'title', 'category', 'subCategory', 'description', 'clientName',
+          'dimensions', 'materials', 'finishing', 'executionTime', 'imageUrl',
+          'visualPreset', 'featured', 'isPublic', 'displayOrder', 'ownerId',
+          'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'title', 'category', 'subCategory', 'description', 'clientName',
+          'dimensions', 'materials', 'finishing', 'executionTime', 'imageUrl',
+          'visualPreset', 'featured', 'isPublic', 'displayOrder', 'ownerId',
+          'adminPasscode', 'createdAt', 'updatedAt'
+        ]) &&
+        data.title is string && data.title.size() >= 2 && data.title.size() <= 120 &&
+        data.category is string && data.category in ['paper_prints', 'outdoor_prints', 'cladding', 'prominent_letters'] &&
+        data.subCategory is string && data.subCategory.size() >= 2 && data.subCategory.size() <= 80 &&
+        data.description is string && data.description.size() >= 2 && data.description.size() <= 1000 &&
+        data.clientName is string && data.clientName.size() >= 1 && data.clientName.size() <= 100 &&
+        data.dimensions is string && data.dimensions.size() >= 1 && data.dimensions.size() <= 80 &&
+        data.materials is string && data.materials.size() >= 1 && data.materials.size() <= 160 &&
+        data.finishing is string && data.finishing.size() >= 1 && data.finishing.size() <= 160 &&
+        data.executionTime is string && data.executionTime.size() >= 1 && data.executionTime.size() <= 60 &&
+        data.imageUrl is string && data.imageUrl.size() >= 0 && data.imageUrl.size() <= 900000 &&
+        data.visualPreset is string && data.visualPreset.size() >= 2 && data.visualPreset.size() <= 60 &&
+        data.featured is bool &&
+        data.isPublic is bool &&
+        data.displayOrder is number && data.displayOrder >= 0 && data.displayOrder <= 10000 &&
+        data.ownerId is string && isValidId(data.ownerId) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: AgencySettings
+    function isValidAgencySettings(data) {
+      return data.keys().hasAll([
+          'studioName', 'tagline', 'heroHeadline', 'heroSubheadline',
+          'whatsappNumber', 'contactNumber', 'facebookUrl', 'instagramUrl',
+          'telegramUrl', 'locationText', 'workingHours', 'yearsExperience',
+          'completedProjectsCount', 'satisfiedClientsCount', 'isPublic',
+          'ownerId', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'studioName', 'tagline', 'heroHeadline', 'heroSubheadline',
+          'whatsappNumber', 'contactNumber', 'facebookUrl', 'instagramUrl',
+          'telegramUrl', 'locationText', 'workingHours', 'yearsExperience',
+          'completedProjectsCount', 'satisfiedClientsCount', 'isPublic',
+          'ownerId', 'adminPasscode', 'updatedAt'
+        ]) &&
+        data.studioName is string && data.studioName.size() >= 2 && data.studioName.size() <= 100 &&
+        data.tagline is string && data.tagline.size() >= 2 && data.tagline.size() <= 160 &&
+        data.heroHeadline is string && data.heroHeadline.size() >= 5 && data.heroHeadline.size() <= 180 &&
+        data.heroSubheadline is string && data.heroSubheadline.size() >= 5 && data.heroSubheadline.size() <= 400 &&
+        data.whatsappNumber is string && data.whatsappNumber.size() >= 3 && data.whatsappNumber.size() <= 120 &&
+        data.contactNumber is string && data.contactNumber.size() >= 3 && data.contactNumber.size() <= 40 &&
+        data.facebookUrl is string && data.facebookUrl.size() >= 0 && data.facebookUrl.size() <= 250 &&
+        data.instagramUrl is string && data.instagramUrl.size() >= 0 && data.instagramUrl.size() <= 250 &&
+        data.telegramUrl is string && data.telegramUrl.size() >= 0 && data.telegramUrl.size() <= 250 &&
+        data.locationText is string && data.locationText.size() >= 2 && data.locationText.size() <= 200 &&
+        data.workingHours is string && data.workingHours.size() >= 2 && data.workingHours.size() <= 120 &&
+        data.yearsExperience is number && data.yearsExperience >= 0 && data.yearsExperience <= 100 &&
+        data.completedProjectsCount is number && data.completedProjectsCount >= 0 && data.completedProjectsCount <= 100000 &&
+        data.satisfiedClientsCount is number && data.satisfiedClientsCount >= 0 && data.satisfiedClientsCount <= 100000 &&
+        data.isPublic is bool &&
+        data.ownerId is string && isValidId(data.ownerId) &&
+        data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: AdminRecord
+    function isValidAdminRecord(data) {
+      return data.keys().hasAll(['uid', 'role', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'role', 'createdAt']) &&
+        data.uid is string && isValidId(data.uid) &&
+        data.role is string && data.role == 'owner' &&
+        data.createdAt is timestamp;
+    }
+
+    // Collection: /projects/{projectId}
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId) && (existing().isPublic == true || isVerifiedAdmin());
+      allow list: if existing().isPublic == true || isVerifiedAdmin();
+
+      allow create: if (isVerifiedAdmin() || hasValidOwnerPasscode()) &&
+        isValidId(projectId) &&
+        isValidProjectItem(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if (isVerifiedAdmin() || hasValidOwnerPasscode()) &&
+        isValidId(projectId) &&
+        isValidProjectItem(incoming()) &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'category', 'subCategory', 'description', 'clientName',
+          'dimensions', 'materials', 'finishing', 'executionTime', 'imageUrl',
+          'visualPreset', 'featured', 'isPublic', 'displayOrder', 'adminPasscode',
+          'updatedAt'
+        ]);
+
+      allow delete: if isVerifiedAdmin() && isValidId(projectId);
+    }
+
+    // Collection: /settings/{settingId}
+    match /settings/{settingId} {
+      allow get: if isValidId(settingId) && settingId == 'agency_profile' && (existing().isPublic == true || isVerifiedAdmin());
+      allow list: if false;
+
+      allow create: if (isVerifiedAdmin() || hasValidOwnerPasscode()) &&
+        isValidId(settingId) &&
+        settingId == 'agency_profile' &&
+        isValidAgencySettings(incoming()) &&
+        incoming().updatedAt == request.time;
+
+      allow update: if (isVerifiedAdmin() || hasValidOwnerPasscode()) &&
+        isValidId(settingId) &&
+        settingId == 'agency_profile' &&
+        isValidAgencySettings(incoming()) &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'studioName', 'tagline', 'heroHeadline', 'heroSubheadline',
+          'whatsappNumber', 'contactNumber', 'facebookUrl', 'instagramUrl',
+          'telegramUrl', 'locationText', 'workingHours', 'yearsExperience',
+          'completedProjectsCount', 'satisfiedClientsCount', 'isPublic',
+          'adminPasscode', 'updatedAt'
+        ]);
+
+      allow delete: if false;
+    }
+
+    // Collection: /admins/{adminId}
+    match /admins/{adminId} {
+      allow get: if isVerifiedAdmin() && isValidId(adminId) && adminId == request.auth.uid;
+      allow list: if false;
+
+      allow create: if isVerifiedAdmin() &&
+        isValidId(adminId) &&
+        adminId == request.auth.uid &&
+        isValidAdminRecord(incoming()) &&
+        incoming().uid == request.auth.uid &&
+        incoming().createdAt == request.time;
+
+      allow update, delete: if false;
+    }
+  }
+}
